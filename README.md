@@ -1,3 +1,18 @@
+#####
+
+```shell
+export K8S_TIMEOUT_SECONDS=$(( 3600 * 12 ))
+```
+
+```shell
+python caption.py 
+--img=/datasets/home/94/194/usingla/projectdata/data/flickr8k/imgs/1000268201_693b08cb0e.jpg 
+--model=BEST_checkpoint_flickr8k_5_cap_per_img_5_min_word_freq.pth.tar 
+--word_map=../../projectdata/output/flickr8k/WORDMAP_flickr8k_5_cap_per_img_5_min_word_freq.json
+```
+
+
+#####
 This is a **[PyTorch](https://pytorch.org) Tutorial to Image Captioning**.
 
 This is the first in [a series of tutorials](https://github.com/sgrvinod/Deep-Tutorials-for-PyTorch) I'm writing about _implementing_ cool models on your own with the amazing PyTorch library.

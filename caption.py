@@ -7,7 +7,9 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import skimage.transform
 import argparse
-from scipy.misc import imread, imresize
+from imageio import imread
+from cv2 import resize as imresize
+# from scipy.misc import imread, imresize
 from PIL import Image
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -107,6 +109,8 @@ def caption_image_beam_search(encoder, decoder, image_path, word_map, beam_size=
         prev_word_inds = top_k_words / vocab_size  # (s)
         next_word_inds = top_k_words % vocab_size  # (s)
 
+        prev_word_inds = prev_word_inds.long()
+
         # Add new words to sequences, alphas
         seqs = torch.cat([seqs[prev_word_inds], next_word_inds.unsqueeze(1)], dim=1)  # (s, step+1)
         seqs_alpha = torch.cat([seqs_alpha[prev_word_inds], alpha[prev_word_inds].unsqueeze(1)],
@@ -167,7 +171,7 @@ def visualize_att(image_path, seq, alphas, rev_word_map, smooth=True):
     for t in range(len(words)):
         if t > 50:
             break
-        plt.subplot(np.ceil(len(words) / 5.), 5, t + 1)
+        plt.subplot(np.int(np.ceil(len(words) / 5.)), 5, t + 1)
 
         plt.text(0, 1, '%s' % (words[t]), color='black', backgroundcolor='white', fontsize=12)
         plt.imshow(image)
@@ -182,6 +186,7 @@ def visualize_att(image_path, seq, alphas, rev_word_map, smooth=True):
             plt.imshow(alpha, alpha=0.8)
         plt.set_cmap(cm.Greys_r)
         plt.axis('off')
+    plt.savefig('test.png')
     plt.show()
 
 
@@ -212,6 +217,7 @@ if __name__ == '__main__':
 
     # Encode, decode with attention and beam search
     seq, alphas = caption_image_beam_search(encoder, decoder, args.img, word_map, args.beam_size)
+    print("Caption generated", seq, [rev_word_map[i] for i in seq])
     alphas = torch.FloatTensor(alphas)
 
     # Visualize caption and attention of best sequence
